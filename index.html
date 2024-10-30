@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crops by Zone</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #cropsDisplay { margin-top: 20px; }
+        .crop-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Crops by Zone</h1>
+    <form id="zoneForm">
+        <label for="zoneId">Zone ID:</label>
+        <input type="number" id="zoneId" required>
+        <button type="submit">Fetch Crops</button>
+    </form>
+    <div id="cropsDisplay"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
+    <script>
+        let currentZoneId = null; // Store the current zone ID
+
+        const socket = io('http://localhost:5000', {
+            extraHeaders: {
+                Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidmFucmFqazE2QGdtYWlsLmNvbSIsImlhdCI6MTcyNTIwOTU3OCwiZXhwIjoxNzI1MjEzMTc4fQ.JyoUVpg8pvOy9mLKaEO1RCDz_ii6P4g6JeFtJjybMB0' // Replace with your actual token
+            }
+        });
+
+        socket.on('connect', () => {
+            console.log('Connected to WebSocket server');
+        });
+
+        socket.on('crops_data', (crops) => {
+            displayCrops(crops);
+        });
+
+        socket.on('crops_data_update', (crops) => {
+            if (currentZoneId !== null) { // Only update if a zone is selected
+                displayCrops(crops);
+            }
+        });
+
+        socket.on('bid_updated', (updatedCrop) => {
+            if (currentZoneId === updatedCrop.zone_id) {
+                updateCropDisplay(updatedCrop);
+            }
+        });
+
+        socket.on('error', (error) => {
+            console.error('Error:', error);
+            document.getElementById('cropsDisplay').innerHTML = `<p>Error: ${error}</p>`;
+        });
+
+        document.getElementById('zoneForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const zoneId = document.getElementById('zoneId').value;
+            currentZoneId = zoneId; // Store current zone ID for updates
+            socket.emit('set_zone', zoneId); // Notify server of the new zone ID
+            socket.send(`get_crops_by_zone:${zoneId}`);
+        });
+
+        function displayCrops(crops) {
+            const display = document.getElementById('cropsDisplay');
+            if (crops.length === 0) {
+                display.innerHTML = '<p>No crops found for this zone.</p>';
+                return;
+            }
+            
+            let html = '<h2>Crops in Zone:</h2>';
+            crops.forEach(crop => {
+                html += `
+                    <div class="crop-item" data-crop-id="${crop.id}">
+                        <h3>${crop.name}</h3>
+                        <p>ID: ${crop.id}</p>
+                        <p>Quantity: ${crop.qty}</p>
+                        <p>Price: $${crop.base_price}</p>
+                    </div>
+                `;
+            });
+            display.innerHTML = html;
+        }
+
+        function updateCropDisplay(updatedCrop) {
+            const cropItem = document.querySelector(`.crop-item[data-crop-id="${updatedCrop.id}"]`);
+            if (cropItem) {
+                cropItem.querySelector('p:nth-child(4)').textContent = `Price: $${updatedCrop.base_price}`;
+            } else {
+                // Optionally handle adding new crops if needed
+            }
+        }
+    </script>
+</body>
+</html>
