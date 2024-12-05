@@ -20,30 +20,31 @@ pipeline {
         }
         
         stage('Deploy with PM2') {
-            steps {
-                script {
-                    // Check if PM2 process exists
-                    def processExists = sh(
-                        script: "sudo -u ${PM2_USER} pm2 list | grep ${PM2_PROCESS_NAME} || true",
-                        returnStatus: true
-                    ) == 0
-                    
-                    if (!processExists) {
-                        // Create new PM2 process if it doesn't exist
-                        sh """
-                            sudo -u ${PM2_USER} pm2 start npm --name ${PM2_PROCESS_NAME} -- start
-                            echo "Created new PM2 process: ${PM2_PROCESS_NAME}"
-                        """
-                    } else {
-                        // Reload existing PM2 process
-                        sh """
-                            sudo -u ${PM2_USER} pm2 reload ${PM2_PROCESS_NAME}
-                            echo "Reloaded existing PM2 process: ${PM2_PROCESS_NAME}"
-                        """
-                    }
-                }
+    steps {
+        script {
+            // Check if PM2 process exists
+            def processExists = sh(
+                script: "sudo -u ${PM2_USER} pm2 list | grep ${PM2_PROCESS_NAME} > /dev/null 2>&1",
+                returnStatus: true
+            ) == 0
+
+            if (!processExists) {
+                // Create new PM2 process
+                sh """
+                    sudo -u ${PM2_USER} pm2 start npm --name ${PM2_PROCESS_NAME} -- start
+                """
+                echo "Created new PM2 process: ${PM2_PROCESS_NAME}"
+            } else {
+                // Reload existing PM2 process
+                sh """
+                    sudo -u ${PM2_USER} pm2 reload ${PM2_PROCESS_NAME} --update-env
+                """
+                echo "Reloaded existing PM2 process: ${PM2_PROCESS_NAME}"
             }
         }
+    }
+}
+
         
         stage('Verify Deployment') {
             steps {
