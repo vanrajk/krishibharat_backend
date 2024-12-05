@@ -51,6 +51,8 @@ pipeline {
                 script {
                     // Verify PM2 process status
                     sh "sudo pm2 status ${PM2_PROCESS_NAME}"
+
+                    sh "sudo pm2 save"
                 }
             }
         }
