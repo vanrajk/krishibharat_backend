@@ -14,13 +14,13 @@ const socketIo = require('socket.io');
 const cors = require('cors'); 
 
 const sslOptions = {
-    cert: fs.readFileSync('./ssl/server.crt'),
-    key: fs.readFileSync('./ssl/server.key')
+  cert: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.tech/fullchain.pem'),
+    key: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.tech/privkey.pem')
 };
 
 const app = express();
 const server = https.createServer(sslOptions, app);
-const PORT_HTTP = 5000;
+const PORT_HTTP = 5040;
 const PORT_HTTPS = 8855; 
 app.use(cors());
 app.use(express.json());
