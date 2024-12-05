@@ -28,7 +28,7 @@ class Crop extends BaseController {
         try {
             decoded = jwt.verify(token, SECRET_KEYS.JWT_SECRET); 
         } catch (err) {
-            return res.status(401).json({ message: 'Invalid or expired token' });
+            return res.status(401).json({ message: 'Invalid or expired token HAI' });
         }
 
         const seller_id = decoded.userId;
