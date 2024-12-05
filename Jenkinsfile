@@ -2,9 +2,7 @@ pipeline {
     agent any
     
     environment {
-        // Unique process name for your application
         PM2_PROCESS_NAME = 'krishibharat-backend'
-        // Specify the user who manages PM2
         PM2_USER = 'darcox'
     }
     
@@ -26,22 +24,22 @@ pipeline {
                 script {
                     // Check if PM2 process exists
                     def processExists = sh(
-                        script: "sudo -u ${PM2_USER} pm2 describe ${PM2_PROCESS_NAME} || true",
+                        script: "sudo -u ${PM2_USER} pm2 list | grep ${PM2_PROCESS_NAME} || true",
                         returnStatus: true
                     ) == 0
                     
                     if (!processExists) {
-                        // Create new PM2 process
+                        // Create new PM2 process if it doesn't exist
                         sh """
                             sudo -u ${PM2_USER} pm2 start npm --name ${PM2_PROCESS_NAME} -- start
+                            echo "Created new PM2 process: ${PM2_PROCESS_NAME}"
                         """
-                        echo "Created new PM2 process: ${PM2_PROCESS_NAME}"
                     } else {
                         // Reload existing PM2 process
                         sh """
                             sudo -u ${PM2_USER} pm2 reload ${PM2_PROCESS_NAME}
+                            echo "Reloaded existing PM2 process: ${PM2_PROCESS_NAME}"
                         """
-                        echo "Reloaded existing PM2 process: ${PM2_PROCESS_NAME}"
                     }
                 }
             }
