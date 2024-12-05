@@ -56,7 +56,7 @@ class AuthController extends BaseController {
             const token = jwt.sign(
                 { userId: user.user_id, email: user.email, user_type: user_data.user_type },
                 SECRET_KEYS.JWT_SECRET,
-                { expiresIn: '24h' }
+                { expiresIn: '30h' }
             );
             const user_type = user_data.user_type;
             this.sendResponse(res, { token, user_type });
