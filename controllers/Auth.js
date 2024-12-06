@@ -28,7 +28,7 @@ class AuthController extends BaseController {
             await this.bankModel.insert({user_id});
             await this.kycModel.insert({user_id})
             const credential_Id = await this.credentialModel.insert({ phone, email, password, user_id});
-            this.sendResponse(res, { user_id: user_id,credential_Id: credential_Id, message: 'User registered successfully' }, 201);
+            this.sendResponse(res, { user_id: user_id,credential_Id: credential_Id, message: 'User registered successfully...' }, 201);
             } else {
                 this.sendError(res, { user_id: user_id, message: 'User registered successfully' }, 500); 
             }
