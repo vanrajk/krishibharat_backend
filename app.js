@@ -37,7 +37,7 @@ const jwt = require('jsonwebtoken');
 const SECRET_KEYS = require('./config/config').SECRET_KEYS;
 const ioHttp = socketIo(httpServer, {
     cors: {
-        origin: "*", // Allow all origins
+        origin: "*", 
         methods: ["GET", "POST"]
     },
 
