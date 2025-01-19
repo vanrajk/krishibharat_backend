@@ -60,7 +60,7 @@ const ioHttp = socketIo(httpServer, {
 });
 
 const zoneSockets = {}; // Store sockets per zone
-const clients = {}; // Store clients with their zone IDs
+const clients = {}; 
 
 ioHttp.on('connection', (socket) => {
     const user = socket.request.user;
