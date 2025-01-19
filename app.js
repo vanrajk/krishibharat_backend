@@ -54,7 +54,7 @@ const ioHttp = socketIo(httpServer, {
                 return callback('Authentication error: Invalid token', false);
             }
             req.user = decoded; // Attach user info to the request object
-            callback(null, true); // Accept the connection
+            callback(null, true); 
         });
     }
 });
