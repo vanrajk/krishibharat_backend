@@ -30,7 +30,7 @@ class AuthController extends BaseController {
             const credential_Id = await this.credentialModel.insert({ phone, email, password, user_id});
             this.sendResponse(res, { user_id: user_id,credential_Id: credential_Id, message: 'User registered successfully...' }, 201);
             } else {
-                this.sendError(res, { user_id: user_id, message: 'User registered successfully' }, 500); 
+                this.sendError(res, { user_id: user_id, message: 'User not registerd' }, 500); 
             }
            
         } catch (error) {
