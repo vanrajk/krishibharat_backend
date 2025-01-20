@@ -168,7 +168,7 @@ const ioHttps = socketIo(server, {
             return callback('Authentication error: Token missing', false);
         }
 
-        const jwtToken = token.split(' ')[1]; // Assuming the token is in the format "Bearer <token>"
+        const jwtToken = token.split(' ')[1];
 
         jwt.verify(jwtToken, SECRET_KEYS.JWT_SECRET, (err, decoded) => {
             if (err) {
