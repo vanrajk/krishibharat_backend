@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'abc' }
     
     environment {
         PM2_PROCESS_NAME = 'krishibharat-backend'
