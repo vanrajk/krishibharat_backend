@@ -83,7 +83,7 @@ ioHttp.on('connection', (socket) => {
             for (const [clientId, zoneId] of Object.entries(clients)) {
                 if (zoneId !== null) {
                     const crops = await cropController.getCropsByZone(zoneId);
-                    ioHttp.to(clientId).emit('crops_data_update', crops); // Send update to the specific client
+                    ioHttp.to(clientId).emit('crops_data_update', crops);
                 }
             }
         } catch (error) {
