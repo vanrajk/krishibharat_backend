@@ -14,8 +14,8 @@ const socketIo = require('socket.io');
 const cors = require('cors'); 
 
 const sslOptions = {
-  cert: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.tech/fullchain.pem'),
-    key: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.tech/privkey.pem')
+  cert: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.site/fullchain.pem'),
+    key: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.site/privkey.pem')
 };
 
 const app = express();
