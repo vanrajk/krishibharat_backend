@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const CropsModel = require('../models/CropsModel')
 const AuctionModel = require('../models/AuctionModel');
 const ZoneModel = require('../models/ZoneModel');
+const ContractsModel = require('../models/ContractsModel');
 
 class Crop extends BaseController {
     constructor(){
@@ -14,6 +15,7 @@ class Crop extends BaseController {
          this.userModel = new UserModel();
          this.auctionModel = new AuctionModel();
          this.zoneModel = new ZoneModel();
+         this.ContractsModel = new ContractsModel();
     }    
 
 
@@ -280,42 +282,82 @@ class Crop extends BaseController {
         }
     }
 
-
-    async placeBid(req, res) {
+    async getcropById(req, res) {
         try {
-            const authHeader = req.headers.authorization;
-            if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                return res.status(401).json({ message: 'Authorization token missing or invalid' });
-            }
-    
-            const token = authHeader.split(' ')[1];
-            
-            let decoded;
-            try {
-                decoded = jwt.verify(token, SECRET_KEYS.JWT_SECRET); 
-            } catch (err) {
-                return res.status(401).json({ message: 'Invalid or expired token' });
-            }
-            
-            const buyer_id = decoded.userId;
-            const { id, sold_price } = req.body;
-            const trigger_price = await this.cropModel.where('id', id).first().trigger_price;
-    
-            // Declare `update` outside the if-else block
-            let update;
-            if (sold_price == trigger_price) {
-                const crop_status = '1';
-                update = await this.cropModel.where('id', id).update({ buyer_id, sold_price, crop_status });
-            } else {
-                update = await this.cropModel.where('id', id).update({ buyer_id, sold_price });
-            }
-    
-            return this.sendResponse(res, update, 200);
-    
+            const { id } = req.body;
+            const contract = await this.cropModel.where('id', id).getResult();
+            return this.sendResponse(res, contract, 200);
         } catch (error) {
             return this.sendError(res, error.message);
         }
     }
+    async placeBid(req, res) {
+        try {
+            // 1. Authentication
+            const authHeader = req.headers.authorization;
+            if (!authHeader?.startsWith('Bearer ')) {
+                return res.status(401).json({ message: 'Authorization token missing or invalid' });
+            }
+    
+            let decoded;
+            try {
+                const token = authHeader.split(' ')[1];
+                decoded = jwt.verify(token, SECRET_KEYS.JWT_SECRET);
+            } catch (err) {
+                return res.status(401).json({ message: 'Invalid or expired token' });
+            }
+    
+            // 2. Input validation
+            const { id, sold_price } = req.body;
+            if (!id || !sold_price) {
+                return res.status(400).json({ message: 'Missing required fields' });
+            }
+    
+            // 3. Get crop details
+            const crop = await this.cropModel.where('id', id).first();
+            if (!crop) {
+                return res.status(404).json({ message: 'Crop not found' });
+            }
+    
+            // 4. Update crop data
+            const buyer_id = decoded.userId;
+            const updateData = {
+                buyer_id,
+                sold_price
+            };
+            console.log(crop.trigger_price);
+            
+    
+            // Check if trigger price is met
+            if (sold_price == crop.trigger_price) {
+                updateData.crop_status = '1';
+                console.log("sold!!!");
+                
+                // Create bid record if needed
+                
+                const seller_id = crop.seller_id;
+                const crop_id = id;
+                await this.ContractsModel.insert({crop_id,seller_id,buyer_id})
+            }
+    
+            const result = await this.cropModel
+                .where('id', id)
+                .update(updateData);
+    
+           
+    
+            return this.sendResponse(res, {
+                message: 'Bid placed successfully',
+                data: result
+            }, 200);
+    
+        } catch (error) {
+            console.error('PlaceBid Error:', error);
+            return this.sendError(res, error.message);
+        }
+    }
+    
+    // Helper method for creating bid records
     
 }
 module.exports = Crop

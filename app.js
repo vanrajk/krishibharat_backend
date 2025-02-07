@@ -10,21 +10,23 @@ const paymentRoutes = require("./routes/PaymentRoutes");
 const cropRoutes = require("./routes/CropRoutes");
 const authToken = require('./middleware/authenticateToken');
 const profileCompletion = require('./middleware/profileCompltion');
+const contractsRoutes = require('./routes/ContractsRoutes');
 const socketIo = require('socket.io');
 const cors = require('cors'); 
 
-const sslOptions = {
-  cert: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.site/fullchain.pem'),
-    key: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.site/privkey.pem')
-};
+// const sslOptions = {
+//   cert: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.site/fullchain.pem'),
+//     key: fs.readFileSync('/etc/letsencrypt/live/platform.krishibharat.site/privkey.pem')
+// };
 
 const app = express();
-const server = https.createServer(sslOptions, app);
+const server = https.createServer( app);
 const PORT_HTTP = 5040;
 const PORT_HTTPS = 8855; 
 app.use(cors());
 app.use(express.json());
 app.use('/api/ai',aiRoutes);
+app.use('/api/contracts',contractsRoutes);
 app.use('/api/users', authToken, userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/wallat',profileCompletion, wallatRoutes);
@@ -98,7 +100,8 @@ ioHttp.on('connection', (socket) => {
         console.log('message');
 
         const [eventName, data] = message.split(':');
-
+        console.log(eventName,data);
+        
         if (eventName === 'get_crops_by_zone') {
             const zone_id = parseInt(data);
             console.log(zone_id);
@@ -124,8 +127,10 @@ ioHttp.on('connection', (socket) => {
 
     socket.on('place_bid', async (bidData) => {
         try {
+            console.log(" called ");
+            
             const updatedCrop = await cropController.placeBid(null, null, bidData);
-
+            
             // Broadcast updated crop data to all sockets in the same zone
             const { zone_id } = updatedCrop; // Assuming updatedCrop contains the zone_id
             if (zoneSockets[zone_id]) {
@@ -245,7 +250,10 @@ ioHttps.on('connection', (socket) => {
             const updatedCrop = await cropController.placeBid(null, null, bidData);
 
             // Broadcast updated crop data to all sockets in the same zone
-            const { zone_id } = updatedCrop; // Assuming updatedCrop contains the zone_id
+            const { zone_id } = updatedCrop; // Assuming updatedCrop contains 
+            // the zone_id
+            console.log("updateing...");
+            
             if (zoneSockets[zone_id]) {
                 zoneSockets[zone_id].forEach(s => {
                     s.emit('bid_updated', updatedCrop);

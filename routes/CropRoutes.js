@@ -18,6 +18,13 @@ router.get('/',async (req, res, next) => {
         next(error);
     }
 })
+router.get('/getcropById',async (req, res, next) => {
+    try {
+        await crop.getcropById(req, res);
+    } catch (error) {
+        next(error);
+    }
+})
 router.get('/published',async (req, res, next) => {
     try {
         await crop.getPublishedCrops(req, res);

@@ -4,10 +4,10 @@ const bcrypt =  require('bcrypt');
 class CropsModel extends BaseModel {
     constructor() {
         super('crops');
-        this.allowedFields = ['id', 'seller_id', 'buyer_id', 'name', 'bag', 'qty', 'base_price', 'trigger_price', 'sold_price', 'created_at', 'sold_at', 'zone_id'];
+        this.allowedFields = ['id', 'seller_id', 'buyer_id', 'name', 'bag', 'qty', 'base_price', 'trigger_price', 'sold_price', 'created_at', 'sold_at', 'crop_status', 'zone_id'];
       
     }
-
+Q
     
 }
 module.exports = CropsModel;
