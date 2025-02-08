@@ -397,9 +397,9 @@ class Crop extends BaseController {
             const transactionData = {
                 trn_id: Math.floor(Math.random() * 10),
                 user_id: buyerId,
-                opening: openingBalance,
+                opening: buyerBalance,
                 amount: -amount,
-                closing: closingBalance,
+                closing: newSellerBalance,
                 status: 'completed',
                 gateway: 'internal_transfer',
                 created_at: new Date()
