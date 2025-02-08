@@ -329,7 +329,7 @@ class Crop extends BaseController {
             };
             console.log(crop.trigger_price);
             const user_wallate_balance = this.wallateModel.select('closing')
-            .where('user_id', buyer_id)
+            .where('user_id', userId)
             .orderBy('id', 'DESC')
             .limit(1)
             .getRow().closing;
@@ -339,7 +339,7 @@ class Crop extends BaseController {
 
             }
             // Check if trigger price is met
-            if (sold_price == crop.trigger_price) {
+            if (sold_price >= crop.trigger_price) {
                 updateData.crop_status = '1';
                 console.log("sold!!!");
                 
