@@ -333,7 +333,7 @@ class Crop extends BaseController {
     .orderBy('id', 'DESC')
     .limit(1)
     .get()
-    .getRowArray(); // Fetch row as an array
+    .getResult(); // Fetch row as an array
 
             
             if (user_wallate_balance < sold_price){
