@@ -394,15 +394,17 @@ class Crop extends BaseController {
     
             // Deduct money from buyer
             const newBuyerBalance = buyerBalance - amount;
-            await this.WallateModel.insert({
+            const transactionData = {
+                trn_id: Math.floor(Math.random() * 10),
                 user_id: buyerId,
-                opening: buyerBalance,
+                opening: openingBalance,
                 amount: -amount,
-                closing: newBuyerBalance,
+                closing: closingBalance,
                 status: 'completed',
                 gateway: 'internal_transfer',
                 created_at: new Date()
-            });
+            };
+            await this.WallateModel.insert(transactionData);
     
             // Get Seller's Wallet Balance
             const sellerWallet = await this.wallateModel.select('closing')
@@ -414,8 +416,9 @@ class Crop extends BaseController {
             const newSellerBalance = sellerBalance + amount;
             console.log("seller: " + sellerBalance);
 
-            // Credit money to seller
-            await this.WallateModel.insert({
+            const sellerWalletData = {
+
+                trn_id: Math.floor(Math.random() * 10),
                 user_id: sellerId,
                 opening: sellerBalance,
                 amount: amount,
@@ -423,7 +426,8 @@ class Crop extends BaseController {
                 status: 'completed',
                 gateway: 'internal_transfer',
                 created_at: new Date()
-            });
+            }
+            await this.WallateModel.insert(sellerWalletData);
     
             return { success: true, message: 'Transaction successful!' };
     
