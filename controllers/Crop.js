@@ -375,12 +375,11 @@ class Crop extends BaseController {
     async transferFunds(buyerId, sellerId, amount) {
         try {
             // Get Buyer Wallet Balance
-            const buyerWallet = await this.WallateModel
-                .select('closing')
-                .where('user_id', buyerId)
-                orderBy('id', 'DESC')
-    .limit(1)
-    .getResult();
+            const buyerWallet = await this.wallateModel.select('closing')
+            .where('user_id', buyerId)
+            .orderBy('id', 'DESC')
+            .limit(1)
+            .getResult(); // Fetch row as an array
     
             if (!buyerWallet || !buyerWallet.closing) {
                 throw new Error('Buyer has no wallet balance!');
@@ -406,12 +405,11 @@ class Crop extends BaseController {
             });
     
             // Get Seller's Wallet Balance
-            const sellerWallet = await this.WallateModel
-                .select('closing')
-                .where('user_id', sellerId)
-                orderBy('id', 'DESC')
-                .limit(1)
-                .getResult();
+            const sellerWallet = await this.wallateModel.select('closing')
+            .where('user_id', sellerId)
+            .orderBy('id', 'DESC')
+            .limit(1)
+            .getResult(); // Fetch row as an array
             const sellerBalance = sellerWallet && sellerWallet.closing ? parseFloat(sellerWallet.closing) : 0;
             const newSellerBalance = sellerBalance + amount;
             console.log("seller: " + sellerBalance);
