@@ -348,7 +348,7 @@ class Crop extends BaseController {
                 
                 const seller_id = crop.seller_id;
                 const crop_id = id;
-                const transactionResult = await this.transferFunds(buyer_id, seller_id, sold_price);
+                await this.transferFunds(buyer_id, seller_id, sold_price);
 
                 await this.ContractsModel.insert({crop_id,seller_id,buyer_id})
             }
@@ -372,7 +372,7 @@ class Crop extends BaseController {
     async transferFunds(buyerId, sellerId, amount) {
         try {
             // Get Buyer Wallet Balance
-            const buyerWallet = await this.walletModel
+            const buyerWallet = await this.WallateModel
                 .select('closing')
                 .where('user_id', buyerId)
                 .orderBy('id', 'DESC')
@@ -391,7 +391,7 @@ class Crop extends BaseController {
     
             // Deduct money from buyer
             const newBuyerBalance = buyerBalance - amount;
-            await this.walletModel.insert({
+            await this.WallateModel.insert({
                 user_id: buyerId,
                 opening: buyerBalance,
                 amount: -amount,
@@ -402,7 +402,7 @@ class Crop extends BaseController {
             });
     
             // Get Seller's Wallet Balance
-            const sellerWallet = await this.walletModel
+            const sellerWallet = await this.WallateModel
                 .select('closing')
                 .where('user_id', sellerId)
                 .orderBy('id', 'DESC')
@@ -413,7 +413,7 @@ class Crop extends BaseController {
             const newSellerBalance = sellerBalance + amount;
     
             // Credit money to seller
-            await this.walletModel.insert({
+            await this.WallateModel.insert({
                 user_id: sellerId,
                 opening: sellerBalance,
                 amount: amount,
