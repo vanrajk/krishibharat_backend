@@ -348,8 +348,10 @@ class Crop extends BaseController {
                 
                 const seller_id = crop.seller_id;
                 const crop_id = id;
-                await this.transferFunds(buyer_id, seller_id, sold_price);
-
+                const is_debited = await this.transferFunds(buyer_id, seller_id, sold_price);
+                if(!is_debited){
+                    return res.status(404).json({ message: 'Not Transfering!!!' });
+                }
                 await this.ContractsModel.insert({crop_id,seller_id,buyer_id})
             }
     
@@ -423,10 +425,10 @@ class Crop extends BaseController {
                 created_at: new Date()
             });
     
-            return { success: true, message: 'Transaction successful!' };
+            return true;
     
         } catch (error) {
-            return { success: false, message: error.message };
+            return false;
         }
     }
     
