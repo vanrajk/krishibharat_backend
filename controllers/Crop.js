@@ -387,6 +387,7 @@ class Crop extends BaseController {
             }
     
             const buyerBalance = parseFloat(buyerWallet.closing);
+    console.log("buyer: "+buyerBalance);
     
             if (buyerBalance < amount) {
                 throw new Error('Insufficient balance!');
@@ -413,7 +414,8 @@ class Crop extends BaseController {
                 .getResult();
             const sellerBalance = sellerWallet && sellerWallet.closing ? parseFloat(sellerWallet.closing) : 0;
             const newSellerBalance = sellerBalance + amount;
-    
+            console.log("seller: " + sellerBalance);
+
             // Credit money to seller
             await this.WallateModel.insert({
                 user_id: sellerId,
