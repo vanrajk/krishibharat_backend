@@ -426,7 +426,7 @@ class Crop extends BaseController {
                 gateway: 'internal_transfer',
                 created_at: new Date()
             };
-            await this.WallateModel.insert(sellerWalletData);
+            await this.wallateModel.insert(sellerWalletData);
     
             return { success: true, message: 'Transaction successful!' };
     
