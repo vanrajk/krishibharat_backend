@@ -348,6 +348,8 @@ class Crop extends BaseController {
                 
                 const seller_id = crop.seller_id;
                 const crop_id = id;
+                const transactionResult = await this.transferFunds(buyer_id, seller_id, sold_price);
+
                 await this.ContractsModel.insert({crop_id,seller_id,buyer_id})
             }
     
@@ -365,6 +367,66 @@ class Crop extends BaseController {
         } catch (error) {
             console.error('PlaceBid Error:', error);
             return this.sendError(res, error.message);
+        }
+    }
+    async transferFunds(buyerId, sellerId, amount) {
+        try {
+            // Get Buyer Wallet Balance
+            const buyerWallet = await this.walletModel
+                .select('closing')
+                .where('user_id', buyerId)
+                .orderBy('id', 'DESC')
+                .limit(1)
+                .getRow();
+    
+            if (!buyerWallet || !buyerWallet.closing) {
+                throw new Error('Buyer has no wallet balance!');
+            }
+    
+            const buyerBalance = parseFloat(buyerWallet.closing);
+    
+            if (buyerBalance < amount) {
+                throw new Error('Insufficient balance!');
+            }
+    
+            // Deduct money from buyer
+            const newBuyerBalance = buyerBalance - amount;
+            await this.walletModel.insert({
+                user_id: buyerId,
+                opening: buyerBalance,
+                amount: -amount,
+                closing: newBuyerBalance,
+                status: 'completed',
+                gateway: 'internal_transfer',
+                created_at: new Date()
+            });
+    
+            // Get Seller's Wallet Balance
+            const sellerWallet = await this.walletModel
+                .select('closing')
+                .where('user_id', sellerId)
+                .orderBy('id', 'DESC')
+                .limit(1)
+                .getRow();
+    
+            const sellerBalance = sellerWallet && sellerWallet.closing ? parseFloat(sellerWallet.closing) : 0;
+            const newSellerBalance = sellerBalance + amount;
+    
+            // Credit money to seller
+            await this.walletModel.insert({
+                user_id: sellerId,
+                opening: sellerBalance,
+                amount: amount,
+                closing: newSellerBalance,
+                status: 'completed',
+                gateway: 'internal_transfer',
+                created_at: new Date()
+            });
+    
+            return { success: true, message: 'Transaction successful!' };
+    
+        } catch (error) {
+            return { success: false, message: error.message };
         }
     }
     
