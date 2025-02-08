@@ -399,7 +399,7 @@ class Crop extends BaseController {
                 user_id: buyerId,
                 opening: buyerBalance,
                 amount: -amount,
-                closing: newSellerBalance,
+                closing: newBuyerBalance,
                 status: 'completed',
                 gateway: 'internal_transfer',
                 created_at: new Date()
