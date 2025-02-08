@@ -329,7 +329,7 @@ class Crop extends BaseController {
             };
             console.log(crop.trigger_price);
             const user_wallate_balance = this.wallateModel.select('closing')
-            .where('user_id', userId)
+            .where('user_id', buyer_id)
             .orderBy('id', 'DESC')
             .limit(1)
             .getRow().closing;
