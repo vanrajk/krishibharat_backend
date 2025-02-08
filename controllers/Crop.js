@@ -328,11 +328,11 @@ class Crop extends BaseController {
                 sold_price
             };
             console.log(crop.trigger_price);
-            const user_wallate_balance = this.walletModel.select('closing')
+            const user_wallate_balance = this.wallateModel.select('closing')
             .where('user_id', userId)
             .orderBy('id', 'DESC')
             .limit(1)
-            .getRow();
+            .getRow().closing;
             
             if (user_wallate_balance < sold_price){
                 return res.status(404).json({ message: 'Balance inefficient!!' });
