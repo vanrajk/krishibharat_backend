@@ -417,7 +417,7 @@ class Crop extends BaseController {
             console.log("seller: " + sellerBalance);
 
             const sellerWalletData = {
-                trn_id: Math.floor(Math.random() * 10),
+                trn_id: "IN_"+Math.floor(Math.random() * 10),
                 user_id: sellerId,
                 opening: sellerBalance,
                 amount: amount,
