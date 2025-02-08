@@ -404,7 +404,7 @@ class Crop extends BaseController {
                 gateway: 'internal_transfer',
                 created_at: new Date()
             };
-            await this.WallateModel.insert(transactionData);
+            await this.wallateModel.insert(transactionData);
     
             // Get Seller's Wallet Balance
             const sellerWallet = await this.wallateModel.select('closing')
