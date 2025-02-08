@@ -340,7 +340,7 @@ class Crop extends BaseController {
                 return res.status(404).json({ message: 'Balance inefficient!!' });
 
             }
-                if (sold_price == crop.trigger_price) {
+             if (sold_price >= crop.trigger_price) {
                 updateData.crop_status = '1';
                 console.log("sold!!!");
                 
