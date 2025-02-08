@@ -332,11 +332,11 @@ class Crop extends BaseController {
     .where('user_id', buyer_id)
     .orderBy('id', 'DESC')
     .limit(1)
-    .getResult().closing; // Fetch row as an array
+    .getResult(); // Fetch row as an array
 
             console.log(user_wallate_balance);
             
-            if (user_wallate_balance < sold_price){
+            if (user_wallate_balance.closing < sold_price){
                 return res.status(404).json({ message: 'Balance inefficient!!' });
 
             }
