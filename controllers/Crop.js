@@ -332,7 +332,7 @@ class Crop extends BaseController {
             .where('user_id', buyer_id)
             .orderBy('id', 'DESC')
             .limit(1)
-            .getRow().closing;
+            .getRow();
             console.log(user_wallate_balance + "balance");
             
             if (user_wallate_balance < sold_price){
