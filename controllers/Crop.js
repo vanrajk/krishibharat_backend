@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const CropsModel = require('../models/CropsModel')
 const AuctionModel = require('../models/AuctionModel');
 const ZoneModel = require('../models/ZoneModel');
+const WallateModel = require('../models/WalletModel');
 const ContractsModel = require('../models/ContractsModel');
 
 class Crop extends BaseController {
@@ -15,6 +16,7 @@ class Crop extends BaseController {
          this.userModel = new UserModel();
          this.auctionModel = new AuctionModel();
          this.zoneModel = new ZoneModel();
+         this.wallateModel = new WallateModel();
          this.ContractsModel = new ContractsModel();
     }    
 
@@ -306,13 +308,13 @@ class Crop extends BaseController {
             } catch (err) {
                 return res.status(401).json({ message: 'Invalid or expired token' });
             }
-    
+            
             // 2. Input validation
             const { id, sold_price } = req.body;
             if (!id || !sold_price) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
-    
+            
             // 3. Get crop details
             const crop = await this.cropModel.where('id', id).first();
             if (!crop) {
@@ -326,8 +328,16 @@ class Crop extends BaseController {
                 sold_price
             };
             console.log(crop.trigger_price);
+            const user_wallate_balance = this.walletModel.select('closing')
+            .where('user_id', userId)
+            .orderBy('id', 'DESC')
+            .limit(1)
+            .getRow().closing;
             
-    
+            if (user_wallate_balance < sold_price){
+                return res.status(404).json({ message: 'Balance inefficient!!' });
+
+            }
             // Check if trigger price is met
             if (sold_price == crop.trigger_price) {
                 updateData.crop_status = '1';
