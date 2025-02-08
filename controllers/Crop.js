@@ -378,9 +378,9 @@ class Crop extends BaseController {
             const buyerWallet = await this.WallateModel
                 .select('closing')
                 .where('user_id', buyerId)
-                .orderBy('id', 'DESC')
-                .limit(1)
-                .getRow();
+                orderBy('id', 'DESC')
+    .limit(1)
+    .getResult();
     
             if (!buyerWallet || !buyerWallet.closing) {
                 throw new Error('Buyer has no wallet balance!');
@@ -408,10 +408,9 @@ class Crop extends BaseController {
             const sellerWallet = await this.WallateModel
                 .select('closing')
                 .where('user_id', sellerId)
-                .orderBy('id', 'DESC')
+                orderBy('id', 'DESC')
                 .limit(1)
-                .getRow();
-    
+                .getResult();
             const sellerBalance = sellerWallet && sellerWallet.closing ? parseFloat(sellerWallet.closing) : 0;
             const newSellerBalance = sellerBalance + amount;
     
