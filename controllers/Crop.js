@@ -332,7 +332,6 @@ class Crop extends BaseController {
     .where('user_id', buyer_id)
     .orderBy('id', 'DESC')
     .limit(1)
-    .get()
     .getResult(); // Fetch row as an array
 
             
